@@ -21,6 +21,15 @@ namespace PawnshopMod
         private const int TierCount = 10;
         private const int NotesPerTier = 10;
 
+        /// <summary>有礼物的那天：纸条必出（原版是 50%）。</summary>
+        public const int GiftDayNoteChance = 100;
+
+        /// <summary>没礼物的那天：也给一个"只写字条"的机会（只从非礼物条目里抽）。</summary>
+        public const int PlainDayNoteChance = 30;
+
+        /// <summary>本次开店流程里是否已经产出过纸条（原版 50% 掷中时置位）。</summary>
+        public static bool NoteCreated { get; set; }
+
         /// <summary>每档附赠的物品，价值随档位递增（unitValue 20 → 325）。</summary>
         private static readonly string[] GiftItems =
         {
@@ -41,8 +50,11 @@ namespace PawnshopMod
             return Mathf.Clamp(reputation / 10, 0, TierCount - 1);
         }
 
-        /// <summary>造一张纸条；声望为负时返回 null（游戏侧会安全跳过）。</summary>
-        public static GameItem Create()
+        /// <summary>
+        /// 造一张纸条；声望为负时返回 null（游戏侧会安全跳过）。
+        /// allowGift=false 时只从 1..9 号里抽（不带物品的那种）。
+        /// </summary>
+        public static GameItem Create(bool allowGift = true)
         {
             int reputation = StoreReputation.GetLLReputation();
             if (reputation < 0)
@@ -51,22 +63,23 @@ namespace PawnshopMod
             }
 
             int tier = TierOf(reputation);
-            int index = PickIndex(tier);
+            int index = PickIndex(tier, allowGift);
             string body = ModHelper.GetLocalized(ModIds.Id, $"psm_note_t{tier:00}_{index:00}");
 
             // 标题、署名都留空：只有正文
             GameItem note = PreBuiltItemHelper.CreateHandnote(body, "", "");
 
-            if (index == NotesPerTier)
+            if (allowGift && index == NotesPerTier)
             {
                 GiveGift(GiftItems[tier]);
             }
 
+            NoteCreated = true;
             return note;
         }
 
         /// <summary>同档内不重复抽取，抽满一轮后重置。</summary>
-        private static int PickIndex(int tier)
+        private static int PickIndex(int tier, bool allowGift)
         {
             string dataKey = $"notes_t{tier:00}_used";
             HashSet<int> used = new HashSet<int>();
@@ -82,13 +95,27 @@ namespace PawnshopMod
                 }
             }
 
-            if (used.Count >= NotesPerTier)
+            int maxIndex = allowGift ? NotesPerTier : NotesPerTier - 1;
+
+            // 只在"这一轮还能抽的条目"里判断是否抽完，避免不带礼物的日子把礼物条卡死
+            int availableCount = 0;
+            for (int i = 1; i <= maxIndex; i++)
             {
-                used.Clear();
+                if (!used.Contains(i))
+                {
+                    availableCount++;
+                }
+            }
+            if (availableCount == 0)
+            {
+                foreach (int i in Enumerable.Range(1, maxIndex).ToList())
+                {
+                    used.Remove(i);
+                }
             }
 
             List<int> pool = new List<int>();
-            for (int i = 1; i <= NotesPerTier; i++)
+            for (int i = 1; i <= maxIndex; i++)
             {
                 if (!used.Contains(i))
                 {

@@ -32,6 +32,9 @@ namespace PawnshopMod
             // 调试用：F9 的 Spawn 页里一键生成一张仰慕者纸条，方便核对文案与档位。
             ModHelper.AddDebugFunction(Manifest.ID, ModHelper.DEBUG_CATEGORY_SPAWN, "Spawn Admirer Note", SpawnAdmirerNote);
 
+            // 调试用：把"纸条为什么不出现"相关的状态打到 F8 控制台。
+            ModHelper.AddDebugFunction(Manifest.ID, ModHelper.DEBUG_CATEGORY_COMMAND, "PawnshopMod: Note State", LogNoteState);
+
             Log.Log("Enabled.");
         }
 
@@ -57,6 +60,25 @@ namespace PawnshopMod
             catch (Exception e)
             {
                 Log.Error("生成纸条失败: " + e.Message);
+            }
+        }
+
+        /// <summary>排查用：纸条依赖的几个状态。</summary>
+        private void LogNoteState()
+        {
+            try
+            {
+                StoreClientManager manager = PlayerStore.Instance != null ? PlayerStore.Instance.storeClientManager : null;
+                int rep = StoreReputation.GetLLReputation();
+                int tier = AdmirerNotes.TierOf(rep);
+                string used = ModHelper.GetModData(Manifest.ID, $"notes_t{tier:00}_used");
+                Log.Log($"perk={StartingPerk.IsSecretAdmirer()} rep={rep} tier=T{tier:00} " +
+                        $"noGiftDays={(manager != null ? manager.secretAdmirerDaysWithoutGift : -1)} " +
+                        $"day={StoreStation.Instance.dayCounter} used=[{used}]");
+            }
+            catch (Exception e)
+            {
+                Log.Error("读取状态失败: " + e.Message);
             }
         }
     }

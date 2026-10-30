@@ -51,6 +51,15 @@ namespace PawnshopMod
         }
 
         /// <summary>
+        /// 只在"有礼物"的日子才会抽到的条目：T00 的 1 号
+        /// 「东西放在门口了。不值钱，也不占地方。」——这句默认门口有东西。
+        /// </summary>
+        private static bool IsGiftOnly(int tier, int index)
+        {
+            return tier == 0 && index == 1;
+        }
+
+        /// <summary>
         /// 造一张纸条；声望为负时返回 null（游戏侧会安全跳过）。
         /// allowGift=false 时只从 1..9 号里抽（不带物品的那种）。
         /// </summary>
@@ -59,6 +68,7 @@ namespace PawnshopMod
             int reputation = StoreReputation.GetLLReputation();
             if (reputation < 0)
             {
+                Debug.Log($"[PawnshopMod] note skipped: lower-level reputation is {reputation} (< 0).");
                 return null;
             }
 
@@ -74,6 +84,7 @@ namespace PawnshopMod
                 GiveGift(GiftItems[tier]);
             }
 
+            Debug.Log($"[PawnshopMod] note created: tier={tier:00} index={index:00} gift={allowGift} rep={reputation}");
             NoteCreated = true;
             return note;
         }
@@ -101,10 +112,11 @@ namespace PawnshopMod
             int availableCount = 0;
             for (int i = 1; i <= maxIndex; i++)
             {
-                if (!used.Contains(i))
+                if (used.Contains(i) || (!allowGift && IsGiftOnly(tier, i)))
                 {
-                    availableCount++;
+                    continue;
                 }
+                availableCount++;
             }
             if (availableCount == 0)
             {
@@ -117,10 +129,11 @@ namespace PawnshopMod
             List<int> pool = new List<int>();
             for (int i = 1; i <= maxIndex; i++)
             {
-                if (!used.Contains(i))
+                if (used.Contains(i) || (!allowGift && IsGiftOnly(tier, i)))
                 {
-                    pool.Add(i);
+                    continue;
                 }
+                pool.Add(i);
             }
 
             int pick = pool[UnityEngine.Random.Range(0, pool.Count)];

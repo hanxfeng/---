@@ -7,7 +7,7 @@
     <RootNamespace>PawnshopMod</RootNamespace>
     <Nullable>disable</Nullable>
     <!-- Keep in sync with <ModVersion> in manifest.xml -->
-    <Version>0.2.4</Version>
+    <Version>0.2.5</Version>
     <!-- Where the game is. Override on the command line with: dotnet build -c Release -p:GameDir="D:\path\to\Probably Stolen" -->
     <GameDir Condition="'$(GameDir)' == ''">E:\SteamLibrary\steamapps\common\Probably Stolen</GameDir>
     <ManagedDir>$(GameDir)\Probably Stolen_Data\Managed</ManagedDir>

@@ -3,7 +3,7 @@
   <ID>pawnshop_mod</ID>
   <Name>更多新闻和更多纸条</Name>
   <Author>韩行风</Author>
-  <ModVersion>0.2.5</ModVersion>
+  <ModVersion>0.2.6</ModVersion>
   <Description>本模组新增了一百种新的纸条，根据下层区声望不同会获得不同的纸条，同时，有些特殊纸条会附送一些固定物品，下层区声望越高，物品价值越高。同时也新增了六十种不同的新闻</Description>
   <GameVersions>
     <Version>0.46</Version>

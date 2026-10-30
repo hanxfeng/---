@@ -35,6 +35,12 @@ namespace PawnshopMod
             // 调试用：把"纸条为什么不出现"相关的状态打到 F8 控制台。
             ModHelper.AddDebugFunction(Manifest.ID, ModHelper.DEBUG_CATEGORY_COMMAND, "PawnshopMod: Note State", LogNoteState);
 
+            // 调试用：13 个特殊 NPC 的"见过/声望/档位/发没发"状态。
+            ModHelper.AddDebugFunction(Manifest.ID, ModHelper.DEBUG_CATEGORY_COMMAND, "PawnshopMod: NPC Notes", delegate
+            {
+                Log.Log(NpcNotes.Describe());
+            });
+
             Log.Log("Enabled.");
         }
 

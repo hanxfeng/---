@@ -17,6 +17,24 @@ import sys
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 NOTES_MD = os.path.join(ROOT, "content", "notes_zh.md")
 NEWS_MD = os.path.join(ROOT, "content", "news_zh.md")
+NPC_MD = os.path.join(ROOT, "content", "npc_notes_zh.md")
+
+# 人物名 -> 代码里用的 id（客户端 identifier 前缀）
+NPC_IDS = {
+    "乔治奥": "georgio",
+    "埃莉诺": "eleanor",
+    "塞尔皮科": "serpico",
+    "卢": "lou",
+    "乔·王尔德": "joe",
+    "索耶": "sawyer",
+    "杰克逊博士": "jackson",
+    "屠夫": "butcher",
+    "詹姆斯·贝利": "bailey",
+    "亚瑟·拉弗勒": "arthur",
+    "李北文": "li",
+    "胡安": "juan",
+    "约翰·史密斯": "john",
+}
 OUT_CSV = os.path.join(ROOT, "src", "PawnshopMod", "Localization", "zh.csv")
 
 NL = chr(92) + "n"  # 字面量 \n，游戏会把它解析成换行
@@ -59,6 +77,21 @@ def parse_news(text):
     return rows
 
 
+def parse_npc(text):
+    """人物纸条：## 乔治奥 / | 1 | 正文 |  ->  psm_npc_georgio_t1"""
+    rows = []
+    current = None
+    for line in text.splitlines():
+        m = re.match(r"^##\s+(.+?)\s*$", line)
+        if m:
+            current = NPC_IDS.get(m.group(1).strip())
+            continue
+        m = re.match(r"^\|\s*([123])\s*\|\s*(.+?)\s*\|\s*$", line)
+        if m and current:
+            rows.append((f"psm_npc_{current}_t{m.group(1)}", m.group(2)))
+    return rows
+
+
 def escape(value):
     if '"' in value:
         return '"' + value.replace('"', '""') + '"'
@@ -66,7 +99,7 @@ def escape(value):
 
 
 def main():
-    rows = parse_news(read(NEWS_MD)) + parse_notes(read(NOTES_MD))
+    rows = parse_news(read(NEWS_MD)) + parse_notes(read(NOTES_MD)) + parse_npc(read(NPC_MD))
 
     seen = set()
     for key, _ in rows:

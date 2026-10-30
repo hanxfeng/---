@@ -1,0 +1,8 @@
+tools/
+.build/
+.ref/
+.workbuddy/
+docs/probably-stolen-modding/
+上传创意工坊/
+src/PawnshopMod/bin/
+src/PawnshopMod/obj/

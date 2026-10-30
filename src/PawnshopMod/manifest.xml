@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Manifest>
+  <ID>pawnshop_mod</ID>
+  <Name>更多新闻和更多纸条</Name>
+  <Author>韩行风</Author>
+  <ModVersion>0.2.3</ModVersion>
+  <Description>本模组新增了一百种新的纸条，根据下层区声望不同会获得不同的纸条，同时，有些特殊纸条会附送一些固定物品，下层区声望越高，物品价值越高。同时也新增了六十种不同的新闻</Description>
+  <GameVersions>
+    <Version>0.46</Version>
+  </GameVersions>
+  <Prerequisites />
+  <!-- Every DLL the game must load, relative to this folder. Nothing else in the folder is loaded. -->
+  <Assemblies>
+    <Assembly>PawnshopMod.dll</Assembly>
+  </Assemblies>
+  <!-- What your code does beyond the game's API: files, network, process, dynamic-code, native, reflection-external.
+       Most mods need none. Check with the console command: mod-scan pawnshop_mod -->
+  <Capabilities />
+</Manifest>

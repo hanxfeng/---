@@ -22,6 +22,10 @@ namespace PawnshopMod
         {
             try
             {
+                if (NoteGate.Paused())
+                {
+                    return;
+                }
                 if (!StartingPerk.IsSecretAdmirer())
                 {
                     return;

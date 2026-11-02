@@ -118,6 +118,10 @@ namespace PawnshopMod
         {
             try
             {
+                if (NoteGate.Paused())
+                {
+                    return;
+                }
                 if (PlayerStore.Instance == null || StoreStation.Instance == null)
                 {
                     return;
